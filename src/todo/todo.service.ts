@@ -49,4 +49,9 @@ export class TodoService {
 
     return deletedTodo;
   }
+
+  async deleteCompletedTodos(): Promise<number> {
+    const result = await this.todoModel.deleteMany({ completed: true }).exec();
+    return result.deletedCount;
+  }
 }
