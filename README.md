@@ -36,6 +36,7 @@ This is a sample Todo application built using [NestJS](https://github.com/nestjs
 - **Read**: Retrieve all todos or a specific todo by ID
 - **Update**: Modify existing todos
 - **Delete**: Remove todos by ID
+- **Scheduled Tasks**: Automatically clean up completed todos daily using a cron job
 
 ## Installation
 
@@ -116,6 +117,16 @@ $ yarn run start:prod
 
 - **Method**: `DELETE`
 - **Endpoint**: `/todo/:id`
+
+## Scheduled Tasks
+
+This application includes a scheduled task that runs daily at midnight to clean up completed todos. The cron job is implemented using the NestJS `@nestjs/schedule` module. It triggers the `handleCron()` method in the `TasksService` class, which deletes all completed todos from the database and logs the results.
+
+To test the cron job, you can modify the schedule to run every 30 seconds:
+
+```typescript
+@Cron(CronExpression.EVERY_30_SECONDS)
+```
 
 ## Test
 
