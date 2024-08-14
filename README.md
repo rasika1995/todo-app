@@ -24,10 +24,6 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Description
-
 This is a sample Todo application built using [NestJS](https://github.com/nestjs), MongoDB, and REST API. It demonstrates basic CRUD operations for managing a list of todos.
 
 ## Features
@@ -37,6 +33,21 @@ This is a sample Todo application built using [NestJS](https://github.com/nestjs
 - **Update**: Modify existing todos
 - **Delete**: Remove todos by ID
 - **Scheduled Tasks**: Automatically clean up completed todos daily using a cron job
+- **Authentication**: Protect routes with JWT-based AuthGuard
+
+## Authentication
+
+The application includes an `AuthGuard` that uses JWTs to protect routes. It is configured to:
+
+- Verify JWT tokens with the HS256 algorithm.
+- Attach the decoded token payload to the request if valid.
+- Deny access if the token is invalid or missing.
+
+Ensure the JWT secret is set in your `.env` file:
+
+```env
+JWT_SECRET=your-256-bit-secret
+```
 
 ## Installation
 
@@ -56,12 +67,13 @@ Make sure you have [Node.js](https://nodejs.org/) and [MongoDB](https://www.mong
     $ yarn install
     ```
 
-3. Configure MongoDB connection:
+3. Configure MongoDB and JWT:
 
-    Update your `.env` file with your MongoDB connection string:
+    Update your `.env` file with your MongoDB connection string and JWT secret:
 
     ```env
     MONGODB_URI=mongodb://localhost:27017/todo-app
+    JWT_SECRET=your-256-bit-secret
     ```
 
 ## Running the app
@@ -79,6 +91,13 @@ $ yarn run start:prod
 
 ## API Endpoints
 
+All API requests require the Authorization header with a Bearer token:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+
 #### Create Todo
 
 - **Method**: `POST`
@@ -90,16 +109,20 @@ $ yarn run start:prod
     "description": "Todo Description",
     "completed": false
   }
+  ```
+- **Description**: Adds a new todo to the list.
 
 #### Get All Todos
 
 - **Method**: `GET`
 - **Endpoint**: `/todo`
+- **Description**: Retrieves all todos.
 
 #### Get Todo by ID
 
 - **Method**: `GET`
 - **Endpoint**: `/todo/:id`
+- **Description**: Retrieves a specific todo by ID.
 
 #### Update Todo
 
@@ -112,11 +135,15 @@ $ yarn run start:prod
     "description": "Updated Description",
     "completed": true
   }
+  ```
+- **Description**: Updates an existing todo by ID.
+
 
 #### Delete Todo
 
 - **Method**: `DELETE`
 - **Endpoint**: `/todo/:id`
+- **Description**:  Deletes a specific todo by ID.
 
 ## Scheduled Tasks
 
