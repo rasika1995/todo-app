@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TasksModule } from './tasks/tasks.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerMiddleware } from './middleware/logger/logger.middleware';
+import { AuthModule } from './guard/auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LoggerMiddleware } from './middleware/logger/logger.middleware';
     ScheduleModule.forRoot(),
     TodoModule,
     TasksModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
