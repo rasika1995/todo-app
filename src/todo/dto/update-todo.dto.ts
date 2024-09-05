@@ -1,4 +1,8 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { Field, InputType, PartialType } from '@nestjs/graphql';
 import { CreateTodoDto } from './create-todo.dto';
 
-export class UpdateTodoDto extends PartialType(CreateTodoDto) {}
+@InputType()
+export class UpdateTodoDto extends PartialType(CreateTodoDto) {
+  @Field(() => Boolean, { nullable: true })
+  completed?: boolean;
+}

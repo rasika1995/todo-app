@@ -8,6 +8,8 @@ import { TasksModule } from './tasks/tasks.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerMiddleware } from './middleware/logger/logger.middleware';
 import { AuthModule } from './guard/auth/auth.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 @Module({
   imports: [
@@ -21,6 +23,12 @@ import { AuthModule } from './guard/auth/auth.module';
         uri: configService.get<string>('MONGODB_URI'),
       }),
       inject: [ConfigService],
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true, // Automatically generate the schema file
+      playground: true, // Enables the GraphQL playground
+      // context: ({ req }) => ({ req }),
     }),
     ScheduleModule.forRoot(),
     TodoModule,

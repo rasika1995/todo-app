@@ -24,7 +24,7 @@
 
 ## Description
 
-This is a sample Todo application built using [NestJS](https://github.com/nestjs), MongoDB, and REST API. It demonstrates basic CRUD operations for managing a list of todos.
+This is a sample Todo application built using [NestJS](https://github.com/nestjs), MongoDB, REST API, and GraphQL. It demonstrates basic CRUD operations for managing a list of todos with both REST and GraphQL endpoints
 
 ## Features
 
@@ -89,7 +89,7 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
-## API Endpoints
+## REST API Endpoints
 
 All API requests require the Authorization header with a Bearer token:
 
@@ -144,6 +144,128 @@ Authorization: Bearer <your-jwt-token>
 - **Method**: `DELETE`
 - **Endpoint**: `/todo/:id`
 - **Description**:  Deletes a specific todo by ID.
+
+## GraphQL API Endpoint
+
+The application also exposes a GraphQL API that allows you to perform CRUD operations on todos.
+
+Endpoint: ```/graphql```
+
+#### HTTP HEADEARS
+
+Include the Authorization header in your GraphQL requests to authenticate:
+
+```json
+{
+  "Authorization": "Bearer <your-jwt-token>"
+}
+```
+
+Replace ```<your-jwt-token>``` with your actual JWT token.
+
+### Example Queries and Mutations
+
+#### Create Todo
+
+- **Mutation**:
+  ```graphql
+  mutation createTodo($todoItem: CreateTodoDto!){
+    createTodo(createTodoDto: $todoItem){
+      id
+      title
+      description
+      completed
+    }
+  }
+  ```
+- **Query Variables:**
+  ```json
+  {
+    "todoItem": {
+      "title": "New todo",
+      "description": "The sample description for new todo item"
+    }
+  }
+  ```
+
+#### Get All Todos
+
+- **Query:**
+
+  ```graphql
+  query getTodoList {
+    getAllTodos{
+      id
+      title
+    }
+  }
+  ```
+
+#### Get Todo by ID
+
+- **Query:**
+
+  ```graphql
+  query getToDo($id: String!) {
+    getTodo(id: $id) {
+      id
+      description
+      title
+      completed
+    }
+  }
+  ```
+
+- **Query Variables:**
+
+  ```json
+  {
+    "id": <id>
+  }
+  ```
+  Replace ```<id>``` with your actual id.
+
+#### Update Todo
+
+- **Mutation**:
+  ```graphql
+  mutation updateToDo($id: String!, $todoItem: UpdateTodoDto!){
+    updateTodo(id: $id, updateTodoDto: $todoItem){
+      id
+      description
+      title
+      completed
+    }
+  }
+  ```
+- **Query Variables:**
+  ```json
+  {
+    "id": <id>,
+    "todoItem": {
+      "title": "Updated title",
+      "completed": true
+    }
+  }
+  ```
+
+#### Delete Todo
+
+- **Mutation:**
+
+  ```graphql
+  mutation deleteToDo($id: String!) {
+    deleteTodo(id: $id)
+  }
+  ```
+
+- **Query Variables:**
+
+  ```json
+  {
+    "id": <id>
+  }
+  ```
 
 ## Scheduled Tasks
 

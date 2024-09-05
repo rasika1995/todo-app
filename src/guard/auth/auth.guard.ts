@@ -3,7 +3,9 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  ContextType,
 } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
@@ -13,6 +15,7 @@ export class AuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const request = this.getRequest(context);
+
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
@@ -34,14 +37,28 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 
+  // private getRequest(context: ExecutionContext): Request {
+  //   return context.switchToHttp().getRequest<Request>();
+  // }
+
+  // Modify to handle both REST and GraphQL contexts
   private getRequest(context: ExecutionContext): Request {
-    return context.switchToHttp().getRequest<Request>();
+    if (context.getType() === 'http') {
+      // REST request
+      return context.switchToHttp().getRequest<Request>();
+    }
+    if (context.getType() === ('graphql' as ContextType)) {
+      // GraphQL request
+      const gqlContext = GqlExecutionContext.create(context).getContext();
+      return gqlContext.req;
+    }
+    throw new UnauthorizedException('Invalid context type');
   }
 
   private extractTokenFromHeader(request: Request): string | null {
     const authHeader = request.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader ?? !authHeader.startsWith('Bearer ')) {
       return null;
     }
 

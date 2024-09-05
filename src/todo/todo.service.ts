@@ -7,7 +7,9 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class TodoService {
-  constructor(@InjectModel(Todo.name) private todoModel: Model<TodoDocument>) {}
+  constructor(@InjectModel(Todo.name) private todoModel: Model<TodoDocument>) {
+    console.log('TodoService instance created');
+  }
 
   async create(createTodoDto: CreateTodoDto): Promise<Todo> {
     const createdTodo = new this.todoModel(createTodoDto);
