@@ -24,7 +24,7 @@
 
 ## Description
 
-This is a sample Todo application built using [NestJS](https://github.com/nestjs), MongoDB, REST API, and GraphQL. It demonstrates basic CRUD operations for managing a list of todos with both REST and GraphQL endpoints
+This is a sample Todo application built using [NestJS](https://github.com/nestjs), MongoDB, REST API, GraphQL, and WebSockets. It demonstrates basic CRUD operations for managing a list of todos with REST, GraphQL endpoints, and real-time updates via WebSockets.
 
 ## Features
 
@@ -49,32 +49,34 @@ Ensure the JWT secret is set in your `.env` file:
 JWT_SECRET=your-256-bit-secret
 ```
 
+**Note**: API authorization is not yet implemented for WebSocket APIs. Authorization for REST and GraphQL APIs is in place.
+
 ## Installation
 
 Make sure you have [Node.js](https://nodejs.org/) and [MongoDB](https://www.mongodb.com/) installed. Then, follow these steps:
 
 1. Clone the repository:
 
-    ```bash
-    $ git clone https://github.com/rasika1995/todo-app.git
+   ```bash
+   $ git clone https://github.com/rasika1995/todo-app.git
 
-    $ cd todo-app
-    ```
+   $ cd todo-app
+   ```
 
 2. Install the dependencies:
 
-    ```bash
-    $ yarn install
-    ```
+   ```bash
+   $ yarn install
+   ```
 
 3. Configure MongoDB and JWT:
 
-    Update your `.env` file with your MongoDB connection string and JWT secret:
+   Update your `.env` file with your MongoDB connection string and JWT secret:
 
-    ```env
-    MONGODB_URI=mongodb://localhost:27017/todo-app
-    JWT_SECRET=your-256-bit-secret
-    ```
+   ```env
+   MONGODB_URI=mongodb://localhost:27017/todo-app
+   JWT_SECRET=your-256-bit-secret
+   ```
 
 ## Running the app
 
@@ -96,7 +98,6 @@ All API requests require the Authorization header with a Bearer token:
 ```
 Authorization: Bearer <your-jwt-token>
 ```
-
 
 #### Create Todo
 
@@ -138,18 +139,17 @@ Authorization: Bearer <your-jwt-token>
   ```
 - **Description**: Updates an existing todo by ID.
 
-
 #### Delete Todo
 
 - **Method**: `DELETE`
 - **Endpoint**: `/todo/:id`
-- **Description**:  Deletes a specific todo by ID.
+- **Description**: Deletes a specific todo by ID.
 
 ## GraphQL API Endpoint
 
 The application also exposes a GraphQL API that allows you to perform CRUD operations on todos.
 
-Endpoint: ```/graphql```
+Endpoint: `/graphql`
 
 #### HTTP HEADEARS
 
@@ -161,7 +161,7 @@ Include the Authorization header in your GraphQL requests to authenticate:
 }
 ```
 
-Replace ```<your-jwt-token>``` with your actual JWT token.
+Replace `<your-jwt-token>` with your actual JWT token.
 
 ### Example Queries and Mutations
 
@@ -169,8 +169,8 @@ Replace ```<your-jwt-token>``` with your actual JWT token.
 
 - **Mutation**:
   ```graphql
-  mutation createTodo($todoItem: CreateTodoDto!){
-    createTodo(createTodoDto: $todoItem){
+  mutation createTodo($todoItem: CreateTodoDto!) {
+    createTodo(createTodoDto: $todoItem) {
       id
       title
       description
@@ -194,7 +194,7 @@ Replace ```<your-jwt-token>``` with your actual JWT token.
 
   ```graphql
   query getTodoList {
-    getAllTodos{
+    getAllTodos {
       id
       title
     }
@@ -223,14 +223,15 @@ Replace ```<your-jwt-token>``` with your actual JWT token.
     "id": <id>
   }
   ```
-  Replace ```<id>``` with your actual id.
+
+  Replace `<id>` with your actual id.
 
 #### Update Todo
 
 - **Mutation**:
   ```graphql
-  mutation updateToDo($id: String!, $todoItem: UpdateTodoDto!){
-    updateTodo(id: $id, updateTodoDto: $todoItem){
+  mutation updateToDo($id: String!, $todoItem: UpdateTodoDto!) {
+    updateTodo(id: $id, updateTodoDto: $todoItem) {
       id
       description
       title
@@ -266,6 +267,102 @@ Replace ```<your-jwt-token>``` with your actual JWT token.
     "id": <id>
   }
   ```
+
+## WebSocket API
+
+The application uses WebSockets to provide real-time updates for changes in the todo list. WebSocket connections are available at the following endpoint:
+
+- **Endpoint**: `ws://localhost:3001`
+- **Description**: Subscribe to this endpoint to receive real-time updates when todos are created, updated, or deleted.
+
+**Note**: API authorization is not yet implemented for WebSocket APIs. Authorization for REST and GraphQL APIs is in place.
+
+### Using Postman with Socket.IO
+
+You can use Postman to test WebSocket connections. Here are the steps to subscribe to WebSocket endpoints and listen for events:
+
+1. **Open Postman** and create a new Socket.IO request.
+2. **Enter the WebSocket endpoint** (`ws://localhost:3001`) in the request URL field.
+3. **Click the "Connect" button** to establish a WebSocket connection.
+
+### Subscribing to Events
+
+After connecting, you need to subscribe to various events and send messages to interact with the API. Follow these steps:
+
+1. **Go to the "Events" Tab**:
+
+   - Click on the "Events" tab in the WebSocket request pane.
+
+2. **Add Events to Listen**:
+
+   - In the "Events" tab, add the following events to listen for updates:
+     - `createTodo`
+     - `getAllTodos`
+     - `getTodoById`
+     - `updateTodo`
+     - `deleteTodo`
+
+3. **Send Messages**:
+   - Switch to the "Messages" tab to send messages to the WebSocket server.
+
+#### Create Todo
+
+- **Event Name**: `createTodo`
+- **Message**:
+  ```json
+  {
+    "title": "<title>",
+    "description": "<description>"
+  }
+  ```
+- Send this message with the event name createTodo to create a new todo.
+
+#### Get All Todos
+
+- **Event Name**: getAllTodos
+- **Message**:
+  ```json
+  {}
+  ```
+- **Description**: Send this message with the event name getAllTodos to retrieve all todos.
+
+#### Get Todo by ID
+
+- **Event Name**: getTodoById
+- **Message**:
+  ```json
+  {
+    "id": "<id>"
+  }
+  ```
+- **Description**: Send this message with the event name getTodoById to retrieve a specific todo by ID.
+
+#### Update Todo
+
+- **Event Name**: updateTodo
+- **Message**:
+  ```json
+  {
+    "id": "<id>",
+    "updateTodoDto" : {
+      "title": "<updated title>",
+      "description": "<updated description>",
+      "completed": <true/false>
+    }
+  }
+  ```
+- **Description**: Send this message with the event name updateTodo to update an existing todo.
+
+#### Delete Todo
+
+- Event Name: deleteTodo
+- Message:
+  ```json
+  {
+    "id": "<id>"
+  }
+  ```
+- Description: Send this message with the event name deleteTodo to delete a specific todo.
 
 ## Scheduled Tasks
 

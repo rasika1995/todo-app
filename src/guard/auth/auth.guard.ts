@@ -52,6 +52,7 @@ export class AuthGuard implements CanActivate {
       const gqlContext = GqlExecutionContext.create(context).getContext();
       return gqlContext.req;
     }
+
     throw new UnauthorizedException('Invalid context type');
   }
 
